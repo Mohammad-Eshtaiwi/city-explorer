@@ -18,10 +18,27 @@ app.get("/location", (req, res) => {
 });
 function Location(city, data) {
   let { display_name: formatted_query, lat: latitude, lon: longitude } = data;
+
   this.city = city;
   this.formatted_query = formatted_query;
   this.latitude = latitude;
   this.longitude = longitude;
 }
 
+// Weather
+
+app.get("/weather", (req, res) => {
+  let { data } = require("./data/weather.json");
+  let result = [];
+  data.forEach((one) => {
+    console.log(one);
+    result.push(new Weather(one));
+  });
+  res.send(result);
+});
+function Weather(data) {
+  let { weather, datetime: time } = data;
+  this.forecast = weather.description;
+  this.time = time;
+}
 app.listen(PORT, () => console.log(`app listening on port ${PORT}`));
