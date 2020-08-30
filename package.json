@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Mohammad-Eshtaiwi/city-explorer/issues"
   },
-  "homepage": "https://github.com/Mohammad-Eshtaiwi/city-explorer#readme"
+  "homepage": "https://github.com/Mohammad-Eshtaiwi/city-explorer#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
