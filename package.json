@@ -1,0 +1,21 @@
+{
+  "name": "city-explorer",
+  "version": "1.0.0",
+  "description": "## Work Records",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mohammad-Eshtaiwi/city-explorer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mohammad-Eshtaiwi/city-explorer/issues"
+  },
+  "homepage": "https://github.com/Mohammad-Eshtaiwi/city-explorer#readme"
+}
