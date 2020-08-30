@@ -1,16 +1,14 @@
 "use strict";
 
 const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => res.send("Hello World!"));
-// {
-//     "search_query": "seattle",
-//     "formatted_query": "Seattle, WA, USA",
-//     "latitude": "47.606210",
-//     "longitude": "-122.332071"
-//   }
+
 app.get("/location", (req, res) => {
   let data = require("./data/location.json");
   let city = req.query.city;
