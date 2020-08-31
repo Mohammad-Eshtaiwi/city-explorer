@@ -38,13 +38,19 @@ function Location(city, data) {
 // Weather
 
 app.get("/weather", (req, res) => {
-    let { data } = require("./data/weather.json");
+    // &lat=31.9515694&lon=-35.9239625
+    const url = `https://api.weatherbit.io/v2.0/forecast/daily?&lat=${req.query.latitude}&lon=${req.query.longitude}&key=${process.env.WEATHER_API_KEY}`;
 
-    let result = data.map((one) => {
-        return new Weather(one);
+    superagent.get(url).then(({ body }) => {
+        console.log(body);
+        let result = body.data.map((one) => {
+            return new Weather(one);
+        });
+        console.log(result);
+        res.send(result);
     });
-    res.send(result);
 });
+
 function Weather(data) {
     let { weather, datetime: time } = data;
     this.forecast = weather.description;

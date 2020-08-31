@@ -39,3 +39,12 @@
 -   Finish time: 3:00 pm
 
 -   Actual time needed to complete: 30 min
+
+**feature #5**
+
+-   Estimate of time needed to complete: 30 min
+-   Start time: 3:10 pm
+
+-   Finish time: 3:50 pm
+
+-   Actual time needed to complete: 40 min
