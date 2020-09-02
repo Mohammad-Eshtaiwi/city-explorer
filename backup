@@ -1,0 +1,12 @@
+// app.get(`/movies`, (req, res) => {
+//     let regeinUrl = `https://api.themoviedb.org/3/configuration/countries?api_key=${process.env.MOVIE_API_KEY}`;
+//     console.log("query =====", req.query);
+//     superagent
+//         .get(regeinUrl)
+//         .then(({ text }) => {
+//             res.send(text);
+//         })
+//         .catch((Error) => {
+//             // console.log(Error);
+//         });
+// });
