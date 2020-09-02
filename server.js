@@ -5,22 +5,38 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 require("dotenv").config();
 const superagent = require("superagent");
+const pg = require("pg");
 
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000;
-
+const client = new pg.Client(process.env.DATABASE_URL);
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.get("/location", (req, res) => {
     let city = req.query.city;
     const url = `https://eu1.locationiq.com/v1/search.php?key=${process.env.LOCATION_KEY}&q=${city}&format=json`;
-    superagent.get(url).then(({ body }) => {
-        let location = new Location(city, body);
-
-        res.send(location);
+    let safeValue = [city];
+    let SQL = `select * from cities where city = $1`;
+    client.query(SQL, safeValue).then(({ rows }) => {
+        console.log(rows);
+        if (rows.length > 0) {
+            console.log("from rows");
+            res.send(rows);
+        } else {
+            getLocation(url, req.query.city, res);
+        }
     });
 });
+
+function getLocation(url, city, res) {
+    superagent.get(url).then(({ body }) => {
+        "from super";
+        let location = new Location(city, body);
+        insertLocation(location);
+        res.send(location);
+    });
+}
 
 function Location(city, data) {
     let {
@@ -105,4 +121,26 @@ app.use(function (req, res, next) {
     res.status(500).send("Sorry, something went wrong");
 });
 
-app.listen(PORT, () => console.log(`app listening on port ${PORT}`));
+client.connect().then(() => {
+    app.listen(PORT, () => console.log(`listening on ${PORT}`));
+});
+
+function insertLocation(location) {
+    let safeValues = [
+        location.city,
+        location.formatted_query,
+        location.latitude,
+        location.longitude,
+    ];
+    let SQL = `INSERT INTO cities (city,formatted_query,latitude,longitude) VALUES($1,$2,$3, $4);`;
+
+    client.query(SQL, safeValues).then((result) => {
+        console.log("from super");
+    });
+
+    // let SQL = `select * from cities`;
+
+    // client.query(SQL).then((result) => {
+    //     console.log(result);
+    // });
+}
