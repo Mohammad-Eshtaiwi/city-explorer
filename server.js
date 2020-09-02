@@ -22,7 +22,7 @@ app.get("/location", (req, res) => {
         console.log(rows);
         if (rows.length > 0) {
             console.log("from rows");
-            res.send(rows);
+            res.send(rows[0]);
         } else {
             getLocation(url, req.query.city, res);
         }
@@ -58,11 +58,9 @@ app.get("/weather", (req, res) => {
     const url = `https://api.weatherbit.io/v2.0/forecast/daily?&lat=${req.query.latitude}&lon=${req.query.longitude}&key=${process.env.WEATHER_API_KEY}`;
 
     superagent.get(url).then(({ body }) => {
-        console.log(body);
         let result = body.data.map((one) => {
             return new Weather(one);
         });
-        console.log(result);
         res.send(result);
     });
 });
@@ -80,7 +78,6 @@ app.get("/trails", (req, res) => {
         .get(url)
         .then(({ body }) => {
             let result = body.trails.map((item) => new Trails(item));
-            console.log(result);
             res.send(result);
         })
         .catch((Error) => {
@@ -102,7 +99,7 @@ function Trails(data) {
     } = data;
 
     let date = conditionDate.split(" ");
-    console.log(data.name);
+
     this.name = name;
     this.location = location;
     this.length = length;
@@ -113,6 +110,66 @@ function Trails(data) {
     this.conditions = conditionStatus + ": " + conditionDetails;
     this.condition_date = date[0];
     this.condition_time = date[1];
+}
+//movies
+app.get(`/movies`, (req, res) => {
+    let regeinUrl = `https://api.themoviedb.org/3/configuration/countries?api_key=${process.env.MOVIE_API_KEY}`;
+
+    superagent
+        .get(regeinUrl)
+        .then(({ text }) => {
+            let englishNames = JSON.parse(text);
+            console.log(englishNames);
+            let targetedName = englishNames.filter((item) =>
+                req.query.formatted_query.includes(item.english_name)
+            );
+            targetedName = targetedName[0].iso_3166_1;
+            let discoverUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.MOVIE_API_KEY}&region=${targetedName}&sort_by=popularity.desc&page=1`;
+            superagent.get(discoverUrl).then((data) => {
+                data = JSON.parse(data.text);
+
+                let movies = data.results.map((movie) => new Movie(movie));
+                // let movie = Movie(data);
+                console.log(movies.length);
+                res.send(movies);
+            });
+        })
+        .catch((Error) => {
+            // console.log(Error);
+        });
+});
+function Movie(movieData) {
+    this.title = movieData.title;
+    this.overview = movieData.overview;
+    this.average_votes = movieData.vote_average;
+    this.total_votes = movieData.vote_count;
+    this.image_url = movieData.poster_path;
+    this.popularity = movieData.popularity;
+    this.released_on = movieData.release_date;
+}
+
+// yelp
+
+app.get(`/yelp`, (req, res) => {
+    // req.query.city
+    let url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${req.query.latitude}&longitude=${req.query.longitude}`;
+    let token =
+        "1kKCo_a6g-2ue8SxACIXgc4clnd_WLUOEU1YSU-2fo8MZ4bkEPtdSOp8gfwJTEGLp2poGYQbN7RZ4IybcVK6gZLX616pemvYd5mWYgv0YeqZlzJmvb23LDKiA55PX3Yx";
+    superagent
+        .get(url)
+        .set({ Authorization: "Bearer " + token })
+        .accept("application/json")
+        .then(({ text }) => {
+            let { businesses } = JSON.parse(text);
+            let result = businesses.map((item) => new Yelp(item));
+            res.send(result);
+        });
+});
+function Yelp({ name, image_url, price, url }) {
+    this.name = name;
+    this.image_url = image_url;
+    this.price = price;
+    this.url = url;
 }
 // error
 app.use(function (req, res, next) {
