@@ -14,8 +14,10 @@ const client = new pg.Client(process.env.DATABASE_URL);
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.get("/location", (req, res) => {
+    // get data from the query
     let city = req.query.city;
     const url = `https://eu1.locationiq.com/v1/search.php?key=${process.env.LOCATION_KEY}&q=${city}&format=json`;
+    // prepare sql query and
     let safeValue = [city];
     let SQL = `select * from cities where city = $1`;
     client.query(SQL, safeValue).then(({ rows }) => {
@@ -84,22 +86,19 @@ app.get("/trails", (req, res) => {
             console.log(Error);
         });
 });
-function Trails(data) {
-    let {
-        name,
-        location,
-        length,
-        stars,
-        starVotes: star_votes,
-        summary,
-        url: trail_url,
-        conditionStatus,
-        conditionDetails,
-        conditionDate,
-    } = data;
-
+function Trails({
+    name,
+    location,
+    length,
+    stars,
+    starVotes: star_votes,
+    summary,
+    url: trail_url,
+    conditionStatus,
+    conditionDetails,
+    conditionDate,
+}) {
     let date = conditionDate.split(" ");
-
     this.name = name;
     this.location = location;
     this.length = length;
@@ -113,10 +112,10 @@ function Trails(data) {
 }
 //movies
 app.get(`/movies`, (req, res) => {
-    let regeinUrl = `https://api.themoviedb.org/3/configuration/countries?api_key=${process.env.MOVIE_API_KEY}`;
+    let regionUrl = `https://api.themoviedb.org/3/configuration/countries?api_key=${process.env.MOVIE_API_KEY}`;
 
     superagent
-        .get(regeinUrl)
+        .get(regionUrl)
         .then(({ text }) => {
             let englishNames = JSON.parse(text);
             console.log(englishNames);
@@ -143,7 +142,7 @@ function Movie(movieData) {
     this.overview = movieData.overview;
     this.average_votes = movieData.vote_average;
     this.total_votes = movieData.vote_count;
-    this.image_url = movieData.poster_path;
+    this.image_url = `https://image.tmdb.org/t/p/w500${movieData.poster_path}`;
     this.popularity = movieData.popularity;
     this.released_on = movieData.release_date;
 }
