@@ -61,5 +61,6 @@ app.use(function (req, res) {
 });
 
 client.connect().then(() => {
+    console.log(client);
     app.listen(PORT, () => console.log(`listening on ${PORT}`));
 });
