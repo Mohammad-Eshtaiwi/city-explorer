@@ -11,6 +11,9 @@ function yelpHandler(req, res) {
             let { businesses } = JSON.parse(text);
             let result = businesses.map((item) => new Yelp(item));
             res.send(result);
+        })
+        .catch((Error) => {
+            console.log(Error.message);
         });
 }
 

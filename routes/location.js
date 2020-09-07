@@ -8,16 +8,21 @@ function locationHandler(req, res, client) {
     let safeValue = [city];
     let SQL = `select * from cities where city = $1`;
     // get data from data base
-    client.query(SQL, safeValue).then(({ rows }) => {
-        if (rows.length > 0) {
-            console.log("from rows");
-            res.send(rows[0]);
-        }
-        // if the data base dont have the data then call it from the api and insert the data into the database
-        else {
-            getLocationFromApi(url, req.query.city, res, client);
-        }
-    });
+    client
+        .query(SQL, safeValue)
+        .then(({ rows }) => {
+            if (rows.length > 0) {
+                console.log("from rows");
+                res.send(rows[0]);
+            }
+            // if the data base dont have the data then call it from the api and insert the data into the database
+            else {
+                getLocationFromApi(url, req.query.city, res, client);
+            }
+        })
+        .catch((Error) => {
+            console.log(Error.message);
+        });
 }
 
 function getLocationFromApi(url, city, res, client) {
@@ -52,9 +57,14 @@ function insertLocation(location, client) {
     ];
     let SQL = `INSERT INTO cities (city,formatted_query,latitude,longitude) VALUES($1,$2,$3, $4);`;
 
-    client.query(SQL, safeValues).then((result) => {
-        console.log("from super");
-    });
+    client
+        .query(SQL, safeValues)
+        .then((result) => {
+            console.log("from super");
+        })
+        .catch((Error) => {
+            console.log(Error.message);
+        });
 }
 
 exports.locationHandler = locationHandler;
