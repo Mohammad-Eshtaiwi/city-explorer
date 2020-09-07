@@ -5,7 +5,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 require("dotenv").config();
-const superagent = require("superagent");
 const pg = require("pg");
 
 // routes handlers
